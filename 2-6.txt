@@ -1,0 +1,23 @@
+#include <stdio.h>
+int findPeakElement(int nums[], int low, int high) {
+  if (low == high) {
+    return low;
+  }
+  int mid = low + (high - low) / 2;
+  if (mid > 0 && nums[mid] > nums[mid - 1] && 
+      (mid == high || nums[mid] > nums[mid + 1])) {
+    return mid;
+  }
+  if (mid > 0 && nums[mid] < nums[mid - 1]) {
+    return findPeakElement(nums, low, mid - 1);
+  } else {
+    return findPeakElement(nums, mid + 1, high);
+  }
+}
+int main() {
+  int nums[] = {1, 2, 3, 1};
+  int n = sizeof(nums) / sizeof(nums[0]);
+  int peak = findPeakElement(nums, 0, n - 1);
+  printf("Peak element index: %d\n", peak);
+  return 0;
+}

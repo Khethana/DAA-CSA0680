@@ -1,0 +1,128 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX_SIZE 100
+
+// Structure to represent a node in the linked list
+struct Node {
+    int data;
+    struct Node* next;
+};
+
+// Function prototypes
+struct Node* createList(int);
+void printList(struct Node*);
+int isEmpty(struct Node*);
+int isOneElement(struct Node*);
+int isAllIdentical(struct Node*);
+int hasNegativeNumbers(struct Node*);
+
+int main() {
+    // Test cases
+    int testCases[][MAX_SIZE] = {
+        {},  // Empty list
+        {1},  // List with one element
+        {2, 2, 2}, // List with all identical elements
+        {-1, 3, -5}, // List with negative numbers
+    };
+    int numTestCases = sizeof(testCases) / sizeof(testCases[0]);
+
+    for (int i = 0; i < numTestCases; i++) {
+        int size = sizeof(testCases[i]) / sizeof(testCases[i][0]);
+        struct Node* head = createList(size, testCases[i]);
+
+        printf("Test Case %d: Input List: [", i + 1);
+        printList(head);
+        printf("]\n");
+
+        // Check and print results for each test
+        if (isEmpty(head)) {
+            printf("  - Empty List\n");
+        } else {
+            if (isOneElement(head)) {
+                printf("  - List with one element\n");
+            } else {
+                if (isAllIdentical(head)) {
+                    printf("  - List with all identical elements\n");
+                } else {
+                    printf("  - List with non-identical elements\n");
+                }
+                if (hasNegativeNumbers(head)) {
+                    printf("  - List contains negative numbers\n");
+                }
+            }
+        }
+        printf("\n");
+
+        // Free allocated memory
+        while (head != NULL) {
+            struct Node* temp = head;
+            head = head->next;
+            free(temp);
+        }
+    }
+
+    return 0;
+}
+
+// Function to create a linked list of specified size with given elements
+struct Node* createList(int size, int elements[]) {
+    struct Node* head = NULL, *temp;
+
+    for (int i = 0; i < size; i++) {
+        temp = (struct Node*)malloc(sizeof(struct Node));
+        temp->data = elements[i];
+        temp->next = head;
+        head = temp;
+    }
+
+    return head;
+}
+
+// Function to print the elements of the linked list
+void printList(struct Node* head) {
+    while (head != NULL) {
+        printf("%d ", head->data);
+        head = head->next;
+    }
+}
+
+// Function to check if the list is empty
+int isEmpty(struct Node* head) {
+    return head == NULL;
+}
+
+// Function to check if the list has only one element
+int isOneElement(struct Node* head) {
+    return head != NULL && head->next == NULL;
+}
+
+// Function to check if all elements in the list are identical
+int isAllIdentical(struct Node* head) {
+    if (isEmpty(head)) {
+        return 1; // Empty list is considered identical (all elements are implicitly 0)
+    }
+
+    int firstElement = head->data;
+    struct Node* current = head->next;
+    while (current != NULL) {
+        if (current->data != firstElement) {
+            return 0; // Not all elements are identical
+        }
+        current = current->next;
+    }
+
+    return 1; // All elements are identical
+}
+
+// Function to check if the list contains any negative numbers
+int hasNegativeNumbers(struct Node* head) {
+    while (head != NULL) {
+        if (head->data < 0) {
+            return 1; // Found a negative number
+        }
+        head = head->next;
+    }
+
+    return 0; // No negative numbers found
+}

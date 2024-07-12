@@ -1,0 +1,60 @@
+#include <stdio.h>
+
+#define MAX_WORKERS 10
+
+// Function to calculate total cost for a given assignment
+int total_cost(int assignment[], int cost_matrix[][MAX_WORKERS], int n) {
+  int total = 0;
+  for (int i = 0; i < n; i++) {
+    total += cost_matrix[i][assignment[i]];
+  }
+  return total;
+}
+
+// Function to generate permutations (adapted from a basic approach)
+void permute(int* arr, int start, int end, int cost_matrix[][MAX_WORKERS], int n, int* min_cost, int* best_assignment) {
+  if (start == end) {
+    int current_cost = total_cost(arr, cost_matrix, n);
+    if (current_cost < *min_cost) {
+      *min_cost = current_cost;
+      for (int i = 0; i < n; i++) {
+        best_assignment[i] = arr[i];
+      }
+    }
+  } else {
+    for (int i = start; i <= end; i++) {
+      swap(&arr[start], &arr[i]);
+      permute(arr, start + 1, end, cost_matrix, n, min_cost, best_assignment);
+      swap(&arr[start], &arr[i]); // Backtrack
+    }
+  }
+}
+
+// Function to solve the assignment problem using exhaustive search
+void assignment_problem(int cost_matrix[][MAX_WORKERS], int n) {
+  int min_cost = INT_MAX;
+  int best_assignment[MAX_WORKERS];
+
+  // Generate all permutations of worker indices (excluding repetitions)
+  int worker_arr[n];
+  for (int i = 0; i < n; i++) {
+    worker_arr[i] = i;
+  }
+  permute(worker_arr, 0, n - 1, cost_matrix, n, &min_cost, best_assignment);
+
+  // Print results
+  printf("Minimum Cost: %d\n", min_cost);
+  printf("Optimal Assignment: ");
+  for (int i = 0; i < n; i++) {
+    printf("Worker %d -> Task %d\n", i + 1, best_assignment[i] + 1);
+  }
+}
+
+int main() {
+  // Test Case 1 - Simple Case
+  int cost_matrix1[3][3] = {{3, 10, 7}, {8, 5, 12}, {4, 6, 9}};
+  int n1 = sizeof(cost_matrix1) / sizeof(cost_matrix1[0]);
+  assignment_problem(cost_matrix1, n1);
+
+  return 0;
+}

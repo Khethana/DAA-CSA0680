@@ -1,0 +1,61 @@
+#include <stdio.h>
+#include <math.h>
+
+#define MAX_POINTS 100
+
+struct Point {
+  int x;
+  int y;
+};
+
+// Function to calculate orientation of three points (p, q, r)
+int orientation(struct Point p, struct Point q, struct Point r) {
+  int val = (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y);
+  if (val == 0) return 0;  // colinear
+  return (val > 0) ? 1 : 2; // clock-wise : 1, counter-clockwise : 2
+}
+
+// Brute-force approach for convex hull (not recommended for large datasets)
+void findConvexHullBruteForce(struct Point points[], int n, struct Point hull[]) {
+  int min_index = 0;  // Initialize with the leftmost point
+
+  // Find the leftmost point
+  for (int i = 1; i < n; i++) {
+    if (points[i].x < points[min_index].x ||
+        (points[i].x == points[min_index].x && points[i].y < points[min_index].y)) {
+      min_index = i;
+    }
+  }
+
+  int hull_index = 0;  // Index for hull points
+
+  // Start from leftmost point and find the convex hull boundary
+  for (int i = 0; i < n; i++) {
+    // If it's the same point or a point on the line segment from min_index to current point, skip
+    if (i == min_index || orientation(points[min_index], points[i], points[hull_index]) == 0) {
+      continue;
+    }
+
+    // Update next hull point
+    hull_index = (hull_index + 1) % MAX_POINTS;
+    points[hull_index] = points[i];
+  }
+
+  // Print the convex hull points
+  printf("Convex Hull (Brute Force - Not recommended for large datasets):\n");
+  for (int i = 0; i < hull_index + 1; i++) {
+    printf("(%d, %d) ", points[i].x, points[i].y);
+  }
+  printf("\n");
+}
+
+int main() {
+  struct Point points[] = {{1, 1}, {4, 6}, {8, 1}, {0, 0}, {3, 3}};
+  int n = sizeof(points) / sizeof(points[0]);
+
+  struct Point hull[MAX_POINTS]; // Array to store convex hull points
+
+  findConvexHullBruteForce(points, n, hull);
+
+  return 0;
+}
